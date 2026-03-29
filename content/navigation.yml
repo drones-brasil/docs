@@ -1,0 +1,64 @@
+tree:
+  - docId: "index"
+
+  - id: navegacao
+    title: "Navegação"
+    children:
+      - id: automatos-de-voo
+        title: "Autômatos de voo"
+        children:
+          - docId: "pid-control-intro"
+      - id: localizacao-e-mapeamento
+        title: "Localização e mapeamento"
+        children:
+          - docId: "slam-visual-intro"
+      - id: visao-computacional
+        title: "Visão computacional"
+        children: []
+
+  - id: comunicacao
+    title: "Comunicação"
+    children:
+      - id: ros
+        title: "ROS"
+        children: []
+      - id: protocolos-de-comunicacao
+        title: "Protocolos de comunicação"
+        children: []
+      - id: rede
+        title: "Rede"
+        children: []
+
+  - id: eletronica
+    title: "Eletrônica"
+    children:
+      - id: baterias
+        title: "Baterias"
+        children:
+          - docId: "baterias-lipo-intro"
+      - id: motores
+        title: "Motores"
+        children: []
+      - id: circuitos-embarcados
+        title: "Circuitos embarcados"
+        children: []
+      - id: computadores-de-bordo
+        title: "Computadores de bordo"
+        children: []
+
+  - id: mecanica
+    title: "Mecânica"
+    children:
+      - id: frames
+        title: "Frames"
+        children: []
+      - id: pecas
+        title: "Peças"
+        children: []
+      - id: aerodinamica
+        title: "Aerodinâmica"
+        children: []
+      - id: integracao
+        title: "Integração"
+        children:
+          - docId: "baterias-lipo-intro"

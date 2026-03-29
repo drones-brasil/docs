@@ -1,0 +1,8 @@
+# Default reviewers (adjust to your org/team handles)
+* @drones-brasil/admins
+
+# Content
+/content/ @drones-brasil/admins
+
+# Website code
+/web/ @drones-brasil/admins

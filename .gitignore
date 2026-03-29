@@ -1,0 +1,20 @@
+prompts/
+
+# Docusaurus / Node
+node_modules/
+.docusaurus/
+build/
+
+# Logs
+*.log
+pnpm-debug.log*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+
+# Env files
+.env
+.env.*

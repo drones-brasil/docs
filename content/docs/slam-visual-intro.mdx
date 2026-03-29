@@ -1,0 +1,16 @@
+---
+title: "Introdução a SLAM visual"
+summary: "Conceitos iniciais de SLAM visual e como pensar em pipeline."
+level: intermediate
+contentType: doc
+keywords: ["slam", "visão computacional", "mapeamento", "localização"]
+authors: ["vinicius-ceccon"]
+---
+
+## O que é
+SLAM visual combina estimativa de pose e construção de mapa usando imagens (e, às vezes, IMU).
+
+## Estrutura típica do pipeline
+- Tracking (features/optical flow)
+- Estimação de pose (PnP/BA)
+- Loop closure e otimização global
