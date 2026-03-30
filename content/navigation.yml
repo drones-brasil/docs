@@ -4,6 +4,14 @@ tree:
   - id: navegacao
     title: "Navegação"
     children:
+      - id: aulas
+        title: "Aulas"
+        children:
+          - docId: "aula-1-programacao-orientada-a-objetos"
+          - docId: "aula-2-workspace-e-pacotes-ros2"
+          - docId: "aula-3-maquina-de-estados"
+          - docId: "aula-4-controle-offboard-px4"
+          - docId: "aula-5-visao-computacional"
       - id: automatos-de-voo
         title: "Autômatos de voo"
         children:

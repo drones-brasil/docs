@@ -1,0 +1,106 @@
+---
+title: "Aula 4 — Controle Offboard de Drones (PX4 + ROS 2)"
+summary: "Fundamentos do PX4 e como controlar o drone em Offboard via ROS 2 (px4_msgs, MicroXRCE-DDS, classe Drone com getters/setters)."
+level: intermediate
+contentType: aula
+keywords: ["px4", "offboard", "ros2", "px4_msgs", "microxrce-dds", "trajectory_setpoint", "vehicle_command"]
+authors: ["vinicius-ceccon"]
+---
+
+## Objetivo
+Entender o ecossistema PX4 + ROS 2 e implementar uma **classe Drone** que encapsula comunicação e comandos (getters/setters).
+
+## 1. PX4 Autopilot (visão geral)
+O **PX4** é um firmware open-source que funciona como “SO do drone”, cuidando de:
+- estabilização/atitude
+- fusão de sensores
+- modos de voo (manual, auto, offboard)
+- interface com sistemas externos (MAVLink e MicroXRCE-DDS)
+
+## 2. Configurando o workspace
+
+```bash
+cd ~
+mkdir drone_ws
+cd drone_ws
+code .
+```
+
+```bash
+mkdir src && cd src
+git clone https://github.com/Equipe-eVTOL-ITA/custom_msgs.git
+git clone --branch main https://github.com/Equipe-eVTOL-ITA/fsm.git
+git clone --branch release/1.15 --recursive https://github.com/PX4/px4_msgs.git
+git clone --branch aula4 https://github.com/Equipe-eVTOL-ITA/simple_fsm.git
+```
+
+Build:
+
+```bash
+cd ~/drone_ws
+source /opt/ros/humble/setup.bash
+colcon build
+```
+
+## 3. px4_msgs e o Agente DDS
+
+### 3.1 O que é `px4_msgs`
+Mensagens ROS 2 do PX4 (seguem uORB).
+
+Listar tópicos:
+
+```bash
+source install/setup.bash
+ros2 topic list
+```
+
+Mostrar interface de uma msg:
+
+```bash
+ros2 interface show px4_msgs/msg/VehicleOdometry
+```
+
+### 3.2 MicroXRCE-DDS
+Ponte PX4 ↔ ROS 2.
+
+```bash
+micro-xrce-dds-agent udp4 -p 8888
+```
+
+## 4. Criando a classe Drone (conceito)
+
+### 4.1 Objetivo da classe
+- Subscribers (ex.: `/fmu/out/vehicle_status`, `/fmu/out/vehicle_odometry`)
+- Getters (ex.: `getArmingState()`, `getLocalPosition()`, `getOrientation()`)
+- Publishers (ex.: `/fmu/in/vehicle_command`, `/fmu/in/trajectory_setpoint`)
+- Setters (ex.: `toOffboardSync()`, `setLocalPosition(...)`, `armSync()`)
+
+### 4.2 Headers vs source (.hpp vs .cpp)
+Separar interface e implementação para build mais eficiente.
+
+## 5. Subscribers e Getters (exemplo)
+- QoS para tópicos PX4
+- subscriber de `VehicleOdometry`
+- getters de posição, velocidade, orientação
+
+## 6. Publishers e Setters (exemplo)
+
+### 6.1 O que é Offboard (intuição)
+Offboard só “engata” se estiver recebendo setpoints a uma taxa mínima:
+- `/fmu/in/offboard_control_mode`
+- `/fmu/in/trajectory_setpoint`
+
+### 6.2 Setters principais
+- `sendCommand(...)`
+- `setOffboardMode()`
+- `arm()` / `disarm()`
+- `setOffboardControlMode(...)`
+- `setLocalPosition(...)`
+- `toOffboardSync()` (publica setpoints antes de trocar o modo)
+
+## Lab — Getters e Setters
+Implemente:
+1) `getLocalVelocity()`
+2) `setLocalVelocity(vx, vy, vz, yaw_rate)`
+3) `armSync()` e `disarmSync()` (loop 10Hz até mudar o estado)
+

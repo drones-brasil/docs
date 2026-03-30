@@ -1,0 +1,86 @@
+---
+title: "Aula 3 — Máquina de Estados (FSM)"
+summary: "Máquinas de estados aplicadas a robótica: conceitos, blackboard e implementação de takeoff/landing e GoTo. Lab: pousar em múltiplas bases."
+level: basic
+contentType: aula
+keywords: ["fsm", "máquina de estados", "blackboard", "ros2", "px4", "offboard"]
+authors: ["vinicius-ceccon"]
+---
+
+## Objetivo
+Entender FSMs na prática e aplicar para controlar um drone (simulado) com ROS 2 + PX4.
+
+## Gravação
+<YouTube id="hYOQW4mY1ow" title="Aula 3 — Máquina de Estados (FSM)" />
+
+## 1. O que é uma FSM
+Uma FSM (Finite State Machine) descreve sistemas que:
+- estão em **um estado** por vez
+- mudam por **transições**
+- acionadas por **eventos/condições**
+
+## 2. Estado: `on_enter`, `act`, `on_exit`
+Cada estado costuma ter:
+- `on_enter`: inicialização
+- `act`: loop principal do estado
+- `on_exit`: limpeza/finalização
+
+## 3. Blackboard
+O blackboard é um “quadro negro” compartilhado entre estados para dados e ponteiros.
+
+Exemplo:
+
+```cpp
+// Set
+blackboard.set<float>("takeoff_height", -2.0);
+
+// Get
+float h = *blackboard.get<float>("takeoff_height");
+```
+
+## 4. Setup do workspace
+```bash
+cd ~
+mkdir drone_ws
+cd drone_ws
+code .
+```
+
+Clone:
+
+```bash
+mkdir src && cd src
+git clone https://github.com/Equipe-eVTOL-ITA/custom_msgs.git
+git clone --branch main https://github.com/Equipe-eVTOL-ITA/fsm.git
+git clone --branch release/1.15 --recursive https://github.com/PX4/px4_msgs.git
+git clone https://github.com/Equipe-eVTOL-ITA/simple_fsm.git
+```
+
+## 5. Controlando o drone por FSM (simulação)
+Você vai:
+- rodar simulação
+- inspecionar tópicos `/fmu/in/*` e `/fmu/out/*`
+- rodar um executável de exemplo do `drone_control`
+
+## 6. Implementando Takeoff & Landing (exemplo completo)
+O padrão é:
+- FSM com transições
+- estados implementando `act` e retornando strings de eventos
+- nó ROS 2 que chama `execute()` num timer
+
+## 7. Implementando GoTo
+Extensão natural de takeoff/landing:
+- adiciona `GoToState`
+- define `target_base` no blackboard
+- transições TAKEOFF → GOTO → LANDING
+
+## Lab — GoTo múltiplas bases
+Objetivo: pousar em 5 bases com coordenadas conhecidas.
+
+Estrutura sugerida:
+- Initial Takeoff
+- Visit Bases
+- Landing
+- Takeoff
+- Return Home
+

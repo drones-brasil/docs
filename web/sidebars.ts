@@ -11,6 +11,17 @@ const sidebars: SidebarsConfig = {
     "items": [
       {
         "type": "category",
+        "label": "Aulas",
+        "items": [
+          "aula-1-programacao-orientada-a-objetos",
+          "aula-2-workspace-e-pacotes-ros2",
+          "aula-3-maquina-de-estados",
+          "aula-4-controle-offboard-px4",
+          "aula-5-visao-computacional"
+        ]
+      },
+      {
+        "type": "category",
         "label": "Autômatos de voo",
         "items": [
           "pid-control-intro"

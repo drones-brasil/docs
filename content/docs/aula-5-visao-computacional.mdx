@@ -1,0 +1,40 @@
+---
+title: "Aula 5 — Visão Computacional"
+summary: "Roadmap prático: SLAM, treino de rede neural (YOLOv8), dataset/anotações, e integração do nó de visão com a classe Drone e FSM."
+level: intermediate
+contentType: aula
+keywords: ["visão computacional", "slam", "yolov8", "dataset", "object detection", "ros2"]
+authors: ["vinicius-ceccon"]
+---
+
+## 1. SLAM
+- Conceitos e referências
+- Onde encaixa na stack do drone (localização/mapeamento)
+
+## 2. Treinar rede neural (pipeline)
+- Introdução a CNNs e algoritmos atuais
+- Criar mundo no Blender (opcional)
+- Gerar dataset de imagens
+- Gerar anotações
+- Treinar YOLOv8 no Colab
+  - Métricas de object detection
+  - (extra) semantic segmentation
+
+## 3. Nó de visão computacional (ROS 2)
+- Carregar rede (`weights.pt`)
+- Subscriber da imagem
+- Publisher da imagem anotada
+- Publisher da classificação
+
+## 4. Na classe Drone
+- Subscriber da classificação
+- Lógica de tratamento das bounding boxes
+- PID sobre a bounding box
+
+## 5. Orquestração
+- Parâmetros: `params.yaml`
+- Launch file:
+  - nó `camera_publisher`
+  - nó de visão computacional
+  - nó de FSM
+

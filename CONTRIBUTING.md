@@ -21,5 +21,10 @@ pnpm -C web start
 
 ### Adicionar/editar autores
 1. Edite `content/authors.yml`
-2. Use `photoUrl` externo (`https://...`)
+2. Adicione a foto em `content/photos/authors/<authorId>.<ext>` (png/jpg/webp).
+3. No build ela vira `/img/authors/<authorId>.webp` (máx. 256px).
+
+### Logos (times e universidades)
+1. Time: `content/photos/teams/<teamId>.<ext>` → `/img/teams/<teamId>.webp`
+2. Universidade: `content/photos/universities/<universityId>.<ext>` → `/img/universities/<universityId>.webp`
 

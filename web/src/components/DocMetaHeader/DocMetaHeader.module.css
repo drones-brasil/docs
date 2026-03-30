@@ -1,0 +1,213 @@
+:root {
+  --meta-border: color-mix(in srgb, var(--ifm-color-emphasis-200) 70%, transparent);
+}
+
+.wrap {
+  margin: 0.4rem 0 1rem 0;
+  padding: 0.8rem 0 0.85rem 0;
+  border-bottom: 1px solid var(--meta-border);
+}
+
+.summary {
+  margin: 0.2rem 0 0.65rem 0;
+  color: var(--ifm-color-emphasis-800);
+  font-size: 0.95rem;
+  line-height: 1.35rem;
+}
+
+.chips {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.18rem 0.55rem;
+  border-radius: 10px;
+  border: 1px solid var(--ifm-color-emphasis-200);
+  font-size: 0.75rem;
+  line-height: 1.1rem;
+  white-space: nowrap;
+}
+
+.chipMuted {
+  background: color-mix(in srgb, var(--ifm-color-emphasis-100) 92%, transparent);
+  color: var(--ifm-color-emphasis-800);
+}
+
+.chipKey {
+  background: color-mix(in srgb, var(--ifm-color-emphasis-100) 96%, transparent);
+  color: var(--ifm-color-emphasis-700);
+  border-color: color-mix(in srgb, var(--ifm-color-emphasis-200) 80%, transparent);
+}
+
+.chipType {
+  border-color: color-mix(in srgb, var(--ifm-color-primary) 35%, var(--ifm-color-emphasis-200));
+  background: color-mix(in srgb, var(--ifm-color-primary) 14%, transparent);
+  color: color-mix(in srgb, var(--ifm-color-primary) 80%, var(--ifm-color-emphasis-900));
+}
+
+.chipLevelBasic {
+  border-color: color-mix(in srgb, #1b8a5a 35%, var(--ifm-color-emphasis-200));
+  background: color-mix(in srgb, #1b8a5a 14%, transparent);
+  color: color-mix(in srgb, #1b8a5a 90%, var(--ifm-color-emphasis-900));
+}
+
+.chipLevelIntermediate {
+  border-color: color-mix(in srgb, #d7b600 45%, var(--ifm-color-emphasis-200));
+  background: color-mix(in srgb, #d7b600 16%, transparent);
+  color: color-mix(in srgb, #8a7500 70%, var(--ifm-color-emphasis-900));
+}
+
+.chipLevelAdvanced {
+  border-color: color-mix(in srgb, #2b4c7e 40%, var(--ifm-color-emphasis-200));
+  background: color-mix(in srgb, #2b4c7e 14%, transparent);
+  color: color-mix(in srgb, #2b4c7e 90%, var(--ifm-color-emphasis-900));
+}
+
+.peopleRow {
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+}
+
+.person {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.55rem 0.6rem;
+  border: 1px solid color-mix(in srgb, var(--ifm-color-emphasis-200) 75%, transparent);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--ifm-background-surface-color) 92%, transparent);
+}
+
+.badgeGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.personText {
+  min-width: 160px;
+}
+
+.personLabel {
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ifm-color-emphasis-700);
+  font-weight: 700;
+}
+
+.personName {
+  font-size: 0.92rem;
+  color: var(--ifm-color-emphasis-900);
+  font-weight: 800;
+  line-height: 1.15rem;
+  margin-top: 0.05rem;
+}
+
+.personSub {
+  font-size: 0.78rem;
+  color: var(--ifm-color-emphasis-700);
+  font-weight: 500;
+  line-height: 1.05rem;
+  margin-top: 0.12rem;
+}
+
+.flipCard {
+  width: 52px;
+  height: 52px;
+  perspective: 900px;
+  flex: 0 0 auto;
+}
+
+.flipInner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 180ms ease;
+}
+
+.flipCard[data-enabled='y']:hover .flipInner,
+.flipCard[data-enabled='y']:focus-within .flipInner {
+  transform: rotateY(180deg);
+}
+
+.flipFace {
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--ifm-color-emphasis-200) 70%, transparent);
+  background: color-mix(in srgb, var(--ifm-color-emphasis-100) 92%, transparent);
+  backface-visibility: hidden;
+}
+
+.flipFront {
+  transform: rotateY(0deg);
+}
+
+.flipBack {
+  transform: rotateY(180deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.faceImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.iconRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  width: 100%;
+  height: 100%;
+  background: color-mix(in srgb, var(--ifm-background-surface-color) 88%, transparent);
+}
+
+.iconLink {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--ifm-color-emphasis-200) 70%, transparent);
+  background: color-mix(in srgb, var(--ifm-color-emphasis-100) 92%, transparent);
+  color: var(--ifm-color-emphasis-900);
+  text-decoration: none;
+  transition: transform 120ms ease, background 120ms ease;
+}
+
+.iconLink:hover {
+  transform: translateY(-1px);
+  background: color-mix(in srgb, var(--ifm-color-primary) 10%, var(--ifm-color-emphasis-100));
+}
+
+.icon {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+}
+
+.icon svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+

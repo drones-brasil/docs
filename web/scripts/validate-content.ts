@@ -7,6 +7,10 @@ type AuthorsYaml = {
   authors: Record<string, unknown>;
 };
 
+type TeamsYaml = {
+  teams: Record<string, unknown>;
+};
+
 type NavDocRef = {docId: string};
 type NavCategory = {id: string; title: string; children: NavNode[]};
 type NavNode = NavDocRef | NavCategory;
@@ -63,17 +67,40 @@ function parseFrontMatterAuthors(filePath: string): string[] {
   return [];
 }
 
+function isSupportedPhotoExt(fileName: string): boolean {
+  const ext = path.extname(fileName).toLowerCase();
+  return ext === '.png' || ext === '.jpg' || ext === '.jpeg' || ext === '.webp';
+}
+
+function listBasenamesIfDirExists(dir: string): Set<string> {
+  if (!fs.existsSync(dir)) return new Set();
+  const out = new Set<string>();
+  for (const entry of fs.readdirSync(dir, {withFileTypes: true})) {
+    if (!entry.isFile()) continue;
+    if (!isSupportedPhotoExt(entry.name)) continue;
+    out.add(path.parse(entry.name).name);
+  }
+  return out;
+}
+
 function main() {
   const root = repoRoot();
   const navPath = path.join(root, 'content', 'navigation.yml');
   const authorsPath = path.join(root, 'content', 'authors.yml');
+  const teamsPath = path.join(root, 'content', 'teams.yml');
 
   const nav = readYamlFile<NavigationYaml>(navPath);
   const authors = readYamlFile<AuthorsYaml>(authorsPath);
+  const teams = readYamlFile<TeamsYaml>(teamsPath);
 
   const authorIds = new Set(Object.keys(authors?.authors ?? {}));
   if (authorIds.size === 0) {
     throw new Error('authors.yml has no authors.');
+  }
+
+  const teamIds = new Set(Object.keys(teams?.teams ?? {}));
+  if (teamIds.size === 0) {
+    throw new Error('teams.yml has no teams.');
   }
 
   const existingDocIds = new Set(listDocsDocs(root));
@@ -104,6 +131,71 @@ function main() {
       .map((x) => `${x.doc}: ${x.authors.join(', ')}`)
       .join('\n');
     throw new Error(`Unknown authorId(s) in front matter:\n${details}`);
+  }
+
+  // Validate that each author in authors.yml references a teamId that exists in teams.yml
+  const badTeams: Array<{authorId: string; teamId: string}> = [];
+  for (const [authorId, author] of Object.entries(authors?.authors ?? {})) {
+    const teamId = (author as any)?.teamId;
+    if (typeof teamId !== 'string' || teamId.length === 0) {
+      badTeams.push({authorId, teamId: String(teamId)});
+      continue;
+    }
+    if (!teamIds.has(teamId)) {
+      badTeams.push({authorId, teamId});
+    }
+  }
+  if (badTeams.length > 0) {
+    const details = badTeams.map((x) => `${x.authorId}: ${x.teamId}`).join('\n');
+    throw new Error(`Unknown/invalid teamId in authors.yml:\n${details}`);
+  }
+
+  // Validate local photos presence (no external URLs):
+  // - authors:        content/photos/authors/<authorId>.<ext>
+  // - teams:          content/photos/teams/<teamId>.<ext>
+  // - universities:   content/photos/universities/<universityId>.<ext>
+  const authorPhotos = listBasenamesIfDirExists(
+    path.join(root, 'content', 'photos', 'authors'),
+  );
+  const teamPhotos = listBasenamesIfDirExists(path.join(root, 'content', 'photos', 'teams'));
+  const universityPhotos = listBasenamesIfDirExists(
+    path.join(root, 'content', 'photos', 'universities'),
+  );
+
+  for (const [authorId, author] of Object.entries(authors?.authors ?? {})) {
+    if ((author as any)?.photoUrl || (author as any)?.photoFile) {
+      throw new Error(
+        `authors.yml author "${authorId}" should not declare photoUrl/photoFile. Put a file in content/photos/authors/${authorId}.<ext> instead.`,
+      );
+    }
+    if (!authorPhotos.has(authorId)) {
+      throw new Error(
+        `Missing author photo for "${authorId}". Add content/photos/authors/${authorId}.<ext>`,
+      );
+    }
+  }
+
+  for (const teamId of teamIds) {
+    if (!teamPhotos.has(teamId)) {
+      throw new Error(
+        `Missing team logo for "${teamId}". Add content/photos/teams/${teamId}.<ext>`,
+      );
+    }
+  }
+
+  // Universities are referenced by string in teams.yml; require a logo for each unique university.
+  const universityIds = new Set<string>();
+  for (const t of Object.values(teams?.teams ?? {})) {
+    const uni = (t as any)?.university;
+    if (typeof uni === 'string' && uni.length > 0) universityIds.add(uni);
+  }
+  for (const uniId of universityIds) {
+    // Normalize suggested id: in this repo it's already used like "ITA"
+    if (!universityPhotos.has(uniId)) {
+      throw new Error(
+        `Missing university logo for "${uniId}". Add content/photos/universities/${uniId}.<ext>`,
+      );
+    }
   }
 
   // eslint-disable-next-line no-console

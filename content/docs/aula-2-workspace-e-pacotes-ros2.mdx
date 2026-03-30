@@ -1,0 +1,152 @@
+---
+title: "Aula 2 — Workspace e Pacotes de ROS 2"
+summary: "Como estruturar um workspace ROS 2 e criar/buildar pacotes seguindo boas práticas. Labs: mensagens customizadas e prática com package.xml/CMakeLists."
+level: basic
+contentType: aula
+keywords: ["ros2", "workspace", "pacotes", "publisher", "subscriber", "package.xml", "cmakelists", "rosdep"]
+authors: ["vinicius-ceccon"]
+---
+
+## Objetivo
+Aprender o básico de **workspaces e pacotes de ROS 2** e sair capaz de buildar, executar e distribuir seus pacotes.
+
+## Gravação
+<YouTube id="pD2csN8N5L0" title="Aula 2 — Workspace e Pacotes de ROS 2" />
+
+## 1. Introdução: Workspaces e Pacotes
+
+### O que é ROS 2?
+Pense no ROS 2 como um “hub de comunicação” para robôs:
+- **Publisher/Subscriber**: alguém publica e quem assina recebe
+- **Node**: um programa que publica/assina tópicos
+- **Topic**: o canal
+- **Mensagem**: o formato da informação
+
+### Workspace (estrutura)
+Exemplo típico:
+
+```text
+ros2_ws/
+├── src/
+├── build/
+├── install/
+└── log/
+```
+
+## 2. Criando o workspace e configurando submodules
+
+### 2.1 Criar o workspace
+```bash
+cd ~
+mkdir evtol_ws && cd evtol_ws && code .
+```
+
+### 2.2 Clonar repositórios
+```bash
+mkdir src && cd src
+git clone https://github.com/Equipe-eVTOL-ITA/simple_pubsub.git
+git clone https://github.com/Equipe-eVTOL-ITA/pubsub_cpp.git
+git clone https://github.com/Equipe-eVTOL-ITA/custom_msgs.git
+git clone https://github.com/Equipe-eVTOL-ITA/camera_publisher.git
+```
+
+### 2.3 Configurar `.gitmodules`
+Crie `.gitmodules` na raiz do workspace:
+
+```ini
+[submodule "src/simple_pubsub"]
+    path = src/simple_pubsub
+    url = https://github.com/Equipe-eVTOL-ITA/simple_pubsub.git
+
+[submodule "src/pubsub_cpp"]
+    path = src/pubsub_cpp
+    url = https://github.com/Equipe-eVTOL-ITA/pubsub_cpp.git
+
+[submodule "src/custom_msgs"]
+    path = src/custom_msgs
+    url = https://github.com/Equipe-eVTOL-ITA/custom_msgs.git
+
+[submodule "src/camera_publisher"]
+    path = src/camera_publisher
+    url = https://github.com/Equipe-eVTOL-ITA/camera_publisher.git
+```
+
+Depois:
+
+```bash
+cd ~/evtol_ws
+git init
+git submodule update --init --recursive
+```
+
+### 2.4 Build do workspace
+```bash
+cd ~/evtol_ws
+source /opt/ros/humble/setup.bash
+colcon build
+```
+
+E `.gitignore` no root do workspace:
+
+```gitignore
+build/
+install/
+log/
+```
+
+## 3. Publisher/Subscriber (exercício guiado)
+
+### 3.1 Mudar para branch `implementar`
+```bash
+cd ~/evtol_ws/src/simple_pubsub
+git checkout implementar
+```
+
+### 3.2 QoS (Quality of Service)
+- history: `KEEP_LAST` (comum) vs `KEEP_ALL`
+- reliability: `BEST_EFFORT` vs `RELIABLE`
+- durability: `VOLATILE` vs `TRANSIENT_LOCAL`
+
+Exemplo:
+
+```python
+from rclpy.qos import QoSProfile, ReliabilityPolicy
+
+qos_profile = QoSProfile(depth=10, reliability=ReliabilityPolicy.RELIABLE)
+```
+
+## 4. Configuração do pacote (package.xml / CMakeLists / setup.py)
+
+### package.xml
+“Ficha técnica” do pacote: nome, versão, mantenedor e dependências.
+
+### CMakeLists.txt
+Compilação para C++: `find_package`, `add_executable`, `ament_target_dependencies`, `install(...)`.
+
+### setup.py
+Instalação/entrypoints para pacotes Python.
+
+## 5. Build do pacote
+
+```bash
+colcon build
+source install/setup.bash
+```
+
+### Dica: `--symlink-install`
+```bash
+colcon build --symlink-install
+```
+
+## 6. Dependências com rosdep
+
+```bash
+rosdep install --from-paths src --ignore-src -r -y
+```
+
+## Lab 3 — Mensagens customizadas em ROS 2
+Objetivo: criar `Dronezeiro.msg` e adaptar publisher/subscriber para esse tipo.
+
+## Lab 4 — package.xml e CMakeLists na prática
+Objetivo: dado um node em C++ (com `rclcpp`, `sensor_msgs`, `px4_msgs`, `vision_msgs`, OpenCV, Eigen), inferir dependências e escrever `package.xml` + `CMakeLists.txt`.
+

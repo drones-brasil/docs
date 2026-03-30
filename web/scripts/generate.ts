@@ -2,17 +2,28 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import {parse as parseYaml} from 'yaml';
+import {optimizePhotos} from './optimize-photos';
 
 type Author = {
   name: string;
   email: string;
   linkedin: string;
-  university: string;
-  photoUrl?: string;
+  teamId: string;
 };
 
 type AuthorsYaml = {
   authors: Record<string, Author>;
+};
+
+type Team = {
+  name: string;
+  university: string;
+  linkedin?: string;
+  gitOrgUrl?: string;
+};
+
+type TeamsYaml = {
+  teams: Record<string, Team>;
 };
 
 type NavDocRef = {docId: string};
@@ -75,6 +86,12 @@ function assertAuthors(auth: AuthorsYaml) {
   }
 }
 
+function assertTeams(t: TeamsYaml) {
+  if (!t || typeof t.teams !== 'object' || !t.teams) {
+    throw new Error('content/teams.yml must have a top-level "teams" map.');
+  }
+}
+
 function generateSidebars(nav: NavigationYaml) {
   const sidebarItems = toSidebarItems(nav.tree);
   const out = `import type {SidebarsConfig} from '@docusaurus/plugin-content-docs';
@@ -95,8 +112,7 @@ function generateAuthorsModule(auth: AuthorsYaml) {
   name: string;
   email: string;
   linkedin: string;
-  university: string;
-  photoUrl?: string;
+  teamId: string;
 };
 
 // This file is generated. Source of truth: content/authors.yml
@@ -105,26 +121,53 @@ export const AUTHORS: Record<string, Author> = ${JSON.stringify(auth.authors, nu
   writeFileEnsured(path.join(repoRoot(), 'web', 'src', 'generated', 'authors.ts'), out);
 }
 
-function main() {
+function generateTeamsModule(t: TeamsYaml) {
+  const out = `export type Team = {
+  name: string;
+  university: string;
+  linkedin?: string;
+  gitOrgUrl?: string;
+};
+
+// This file is generated. Source of truth: content/teams.yml
+export const TEAMS: Record<string, Team> = ${JSON.stringify(t.teams, null, 2)} as const;
+`;
+  writeFileEnsured(path.join(repoRoot(), 'web', 'src', 'generated', 'teams.ts'), out);
+}
+
+async function main() {
   const root = repoRoot();
   const navPath = path.join(root, 'content', 'navigation.yml');
   const authorsPath = path.join(root, 'content', 'authors.yml');
+  const teamsPath = path.join(root, 'content', 'teams.yml');
 
   if (!fs.existsSync(navPath)) throw new Error(`Missing ${navPath}`);
   if (!fs.existsSync(authorsPath)) throw new Error(`Missing ${authorsPath}`);
+  if (!fs.existsSync(teamsPath)) throw new Error(`Missing ${teamsPath}`);
 
   const nav = readYamlFile<NavigationYaml>(navPath);
   const authors = readYamlFile<AuthorsYaml>(authorsPath);
+  const teams = readYamlFile<TeamsYaml>(teamsPath);
 
   assertNavigation(nav);
   assertAuthors(authors);
+  assertTeams(teams);
 
   generateSidebars(nav);
   generateAuthorsModule(authors);
+  generateTeamsModule(teams);
+
+  const photos = await optimizePhotos({repoRoot: root});
 
   // eslint-disable-next-line no-console
-  console.log('Generated sidebars.ts and src/generated/authors.ts');
+  console.log(
+    `Generated sidebars/authors/teams and optimized photos: authors p=${photos.authors.processed}/s=${photos.authors.skipped}/r=${photos.authors.removed}; teams p=${photos.teams.processed}/s=${photos.teams.skipped}/r=${photos.teams.removed}; universities p=${photos.universities.processed}/s=${photos.universities.skipped}/r=${photos.universities.removed}`,
+  );
 }
 
-main();
+main().catch((err) => {
+  // eslint-disable-next-line no-console
+  console.error(err);
+  process.exit(1);
+});
 
