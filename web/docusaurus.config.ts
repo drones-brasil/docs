@@ -64,7 +64,7 @@ const config: Config = {
 
   themeConfig: {
     // Replace with your project's social card
-    image: 'img/dronesbr-social-card.png',
+    image: 'img/dronesbr-social-card.1200x630.jpg',
     colorMode: {
       respectPrefersColorScheme: true,
     },
