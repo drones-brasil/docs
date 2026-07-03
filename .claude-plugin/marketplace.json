@@ -1,0 +1,15 @@
+{
+  "name": "evtol",
+  "description": "Local eVTOL Claude plugin marketplace for testing custom plugin installation.",
+  "owner": {
+    "name": "eVTOL"
+  },
+  "plugins": [
+    {
+      "name": "evtol",
+      "displayName": "eVTOL",
+      "source": "./plugins/evtol",
+      "description": "Placeholder eVTOL plugin for testing Claude Code marketplace installation."
+    }
+  ]
+}

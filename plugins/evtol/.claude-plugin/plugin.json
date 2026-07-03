@@ -1,0 +1,8 @@
+{
+  "name": "evtol",
+  "version": "0.1.0",
+  "description": "Placeholder eVTOL plugin for testing Claude Code marketplace installation.",
+  "author": {
+    "name": "eVTOL"
+  }
+}
